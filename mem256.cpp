@@ -21,16 +21,16 @@ struct RAM {
 RAM ram[QTD_RAM];
 CACHE cache[QTD_CACHE];
 
+//write ram data
 int write_ram_data(){
-    //write ram data
     for(int i=0;i<QTD_RAM;i++)
         cout << "ADD: " << ram[i].address 
         << " DATA: " << ram[i].data 
         << endl;
 }
 
+//write cache data
 int write_cache_data(){
-    //write cache data
     for(int i=0;i<QTD_CACHE;i++)
         cout << "P: " << cache[i].p 
         << " ADD: " << cache[i].address 
@@ -38,6 +38,7 @@ int write_cache_data(){
         << endl;
 }
 
+//load ram
 void load_ram(){
     ifstream myReadFile;
     myReadFile.open("initial_data/initial_data");
@@ -47,13 +48,13 @@ void load_ram(){
         exit(1); // terminate with error
     }
 
-    //load ram
     for(int i=0;i<QTD_RAM;i++)
         myReadFile >> ram[i].address >> ram[i].data;
 
     myReadFile.close();
 }
 
+//load cache
 void load_cache(){
     for(int i=0;i<QTD_CACHE;i++){
         cache[i].p = 1;
@@ -62,8 +63,8 @@ void load_cache(){
     }
 }
 
+//search if given address is into cache
 int search_ram(string address){
-    //search if given address is into cache
     for(int i=0;i<QTD_RAM;i++){
         if(address == ram[i].address)
             return i;
@@ -71,8 +72,8 @@ int search_ram(string address){
     return -1;    
 }
 
+//search if given address is into cache
 int search_cache(string address){
-    //search if given address is into cache
     for(int i=0;i<QTD_CACHE;i++){
         if(address == cache[i].address)
             return i;
@@ -80,34 +81,36 @@ int search_cache(string address){
     return -1;
 }
 
+//return minimum priority (always 1)
 int get_min_p_cache(){
-    //return minimum priority (always 1)
     for(int i=0;i<QTD_CACHE;i++){
         if(cache[i].p == 1)
             return i;
     }
 }
 
+//update cache priorities
 void update_cache(int index){
     //set maximum priority
     cache[index].p = QTD_CACHE;
 
     //update other priorities
     for(int i=0;i<QTD_CACHE;i++){
-        if(cache[i].p > 1 && cache[i].p != QTD_CACHE)
+        if(cache[i].p > 1 && cache[i].p != QTD_CACHE){
             cache[i].p--;
+        }
     }
 }
 
+//insert address into cache
 void insert_cache(string address){
-    int min_p = get_min_p_cache();
-    cache[min_p].address = address;
-    cache[min_p].data = ram[search_ram(address)].data;
-    update_cache(min_p);
+    int index_min_p = get_min_p_cache();
+    cache[index_min_p].address = address;
+    cache[index_min_p].data = ram[search_ram(address)].data;
+    update_cache(index_min_p);
 }
 
 int main(){   
-    
     //load ram
     load_ram();
 
@@ -144,6 +147,9 @@ int main(){
     << " MISS: " << miss << endl
     << "HIT RATE: " << 100*(hit/(hit+miss)) << "%"
     << endl;
+
+    cout << endl << endl << endl;
+    write_cache_data();
 
     return 0;
 }
