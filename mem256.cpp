@@ -57,7 +57,7 @@ void load_ram(){
 //load cache
 void load_cache(){
     for(int i=0;i<QTD_CACHE;i++){
-        cache[i].p = 1;
+        cache[i].p = i+1;
         cache[i].address = "";
         cache[i].data = "";
     }
@@ -91,14 +91,15 @@ int get_min_p_cache(){
 
 //update cache priorities
 void update_cache(int index){
+    //get last priority
+    int aux = cache[index].p;
     //set maximum priority
     cache[index].p = QTD_CACHE;
 
     //update other priorities
     for(int i=0;i<QTD_CACHE;i++){
-        if(cache[i].p > 1 && cache[i].p != QTD_CACHE){
-            cache[i].p--;
-        }
+        if(cache[i].p > aux && i != index)
+            cache[i].p--;       
     }
 }
 
