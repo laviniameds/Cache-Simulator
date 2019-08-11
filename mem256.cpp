@@ -1,32 +1,36 @@
 #include <stdio.h>
 #include <iostream>
 
-#define QTD_CACHE_ADRESS 8
-#define QTD_CACHE_DATA 8
-#define QTD_RAM_ADRESS 256
-#define QTD_RAM_DATA 256
+#define QTD_CACHE 8
+#define QTD_RAM 256
 
 using namespace std;
 
 struct CACHE {
-    int p[QTD_CACHE_ADRESS];
-    string adress[QTD_CACHE_ADRESS];
-    string data[QTD_CACHE_DATA];
+    int p[QTD_CACHE];
+    string adress;
+    string data;
 };
 
 struct RAM {
-    string adress[QTD_RAM_ADRESS];
-    string data[QTD_RAM_DATA];
+    string adress;
+    string data;
 };
 
 int main(){
 
-    RAM mem;
-    CACHE cache;
+    RAM mem[QTD_RAM];
+    CACHE cache[QTD_CACHE];
 
+    //load memory
+    for(int i=0;i<QTD_RAM;i++)
+        cin >> mem[i].adress >> mem[i].data;
     
 
-
+    //write memory data
+    for(int i=0;i<QTD_RAM;i++)
+        cout << "ADD: " << mem[i].adress << " DATA: " << mem[i].data << endl;
+    
 
     return 0;
 }
