@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <iostream>
-#include<fstream>
+#include <fstream>
 
 #define QTD_CACHE 8
 #define QTD_RAM 256
@@ -18,19 +18,19 @@ struct RAM {
     string data;
 };
 
-RAM mem[QTD_RAM];
+RAM ram[QTD_RAM];
 CACHE cache[QTD_CACHE];
 
-int write_memory_data(){
-    //write memory data
+int write_ram_data(){
+    //write ram data
     for(int i=0;i<QTD_RAM;i++)
-        cout << "ADD: " << mem[i].address 
-        << " DATA: " << mem[i].data 
+        cout << "ADD: " << ram[i].address 
+        << " DATA: " << ram[i].data 
         << endl;
 }
 
 int write_cache_data(){
-    //write memory data
+    //write cache data
     for(int i=0;i<QTD_CACHE;i++)
         cout << "P: " << cache[i].p 
         << " ADD: " << cache[i].address 
@@ -38,7 +38,7 @@ int write_cache_data(){
         << endl;
 }
 
-void load_memory(){
+void load_ram(){
     ifstream myReadFile;
     myReadFile.open("initial_data/initial_data");
 
@@ -47,9 +47,9 @@ void load_memory(){
         exit(1); // terminate with error
     }
 
-    //load memory
+    //load ram
     for(int i=0;i<QTD_RAM;i++)
-        myReadFile >> mem[i].address >> mem[i].data;
+        myReadFile >> ram[i].address >> ram[i].data;
 
     myReadFile.close();
 }
@@ -62,15 +62,17 @@ void load_cache(){
     }
 }
 
-int search_memory(string address){
+int search_ram(string address){
+    //search if given address is into cache
     for(int i=0;i<QTD_RAM;i++){
-        if(address == mem[i].address)
+        if(address == ram[i].address)
             return i;
     }
     return -1;    
 }
 
 int search_cache(string address){
+    //search if given address is into cache
     for(int i=0;i<QTD_CACHE;i++){
         if(address == cache[i].address)
             return i;
@@ -79,6 +81,7 @@ int search_cache(string address){
 }
 
 int get_min_p_cache(){
+    //return minimum priority (always 1)
     for(int i=0;i<QTD_CACHE;i++){
         if(cache[i].p == 1)
             return i;
@@ -86,8 +89,10 @@ int get_min_p_cache(){
 }
 
 void update_cache(int index){
+    //set maximum priority
     cache[index].p = QTD_CACHE;
 
+    //update other priorities
     for(int i=0;i<QTD_CACHE;i++){
         if(cache[i].p > 1 && cache[i].p != QTD_CACHE)
             cache[i].p--;
@@ -95,20 +100,21 @@ void update_cache(int index){
 }
 
 void insert_cache(string address){
-    cache[get_min_p_cache()].address = address;
-    cache[get_min_p_cache()].data = mem[search_memory(address)].data;
-    update_cache(get_min_p_cache());
+    int min_p = get_min_p_cache();
+    cache[min_p].address = address;
+    cache[min_p].data = ram[search_ram(address)].data;
+    update_cache(min_p);
 }
 
 int main(){   
     
-    //load memory
-    load_memory();
+    //load ram
+    load_ram();
 
     //load_cache
     load_cache();
 
-    //write_memory_data();
+    //write_ram_data();
     //write_cache_data();
 
     double hit = 0;
@@ -119,12 +125,15 @@ int main(){
     // read trace
     while (cin >> address){
 
+        //check if adress is into cache
         int index = search_cache(address);
 
+        //if it is, update cache priority
         if(index != -1){
             update_cache(index);
             hit++;
-        }              
+        }    
+        //else, insert adress into cache          
         else {
             insert_cache(address);
             miss++;
