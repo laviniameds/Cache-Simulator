@@ -92,13 +92,13 @@ int get_min_p_cache(){
 //update cache priorities
 void update_cache(int index){
     //get last priority
-    int aux = cache[index].p;
+    int last_priority = cache[index].p;
     //set maximum priority
     cache[index].p = QTD_CACHE;
 
-    //update other priorities
+    //update other priorities that are higher than the last priority and are not the current address
     for(int i=0;i<QTD_CACHE;i++){
-        if(cache[i].p > aux && i != index)
+        if(cache[i].p > last_priority && i != index)
             cache[i].p--;       
     }
 }
@@ -144,7 +144,7 @@ int main(){
         }
     }
     
-    cout << "HITS: " << hit 
+    cout << "HIT: " << hit 
     << " MISS: " << miss << endl
     << "HIT RATE: " << 100*(hit/(hit+miss)) << "%"
     << endl;
