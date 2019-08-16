@@ -129,7 +129,7 @@ void insert_cache(string address){
     int i = get_line_index(line);
 
     cache[i].tag = tag;
-    cache[i].data = search_ram(address);
+    cache[i].data = ram[search_ram(address)].data;
 }
 
 void update_cache(int i, string address){
