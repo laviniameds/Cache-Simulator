@@ -41,7 +41,7 @@ int write_cache_data(){
 //load ram
 void load_ram(){
     ifstream myReadFile;
-    myReadFile.open("initial_data/initial_data");
+    myReadFile.open("./initial_data/initial_data");
 
     if (!myReadFile) {
         cout << "Unable to open file";
