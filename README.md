@@ -20,7 +20,7 @@ $ g++ -std=c++14 -o cache_direct_mapping/direct_mapping cache_direct_mapping/dir
 $ ./cache_direct_mapping/direct_mapping < trace/trace
 ```
 
-3.1 Execute **fully_associative.cpp** with the generated *trace input* and get the results:
+3.2 Execute **fully_associative.cpp** with the generated *trace input* and get the results:
 
 ```
 $ g++ -std=c++14 -o cache_fully_associative/fully_associative cache_fully_associative/fully_associative.cpp
