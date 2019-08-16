@@ -76,28 +76,65 @@ int search_ram(string address){
     return -1;    
 }
 
-//search if given address is into cache
-int search_cache(string address){
+string get_address_binary(string address){
     //get hex address and convert to binary
     bitset<QTD_CACHE> ads_bin (stoi(address, 0, 16));
     //convert binary to string
-    string str = ads_bin.to_string();
+    return ads_bin.to_string();
+}
+
+string get_line_binary(string address){
+    //get hex address
+    string str = get_address_binary(address);
+    
+    //get line part of full address
+    return str.substr(str.length() - QTD_LINE);
+}
+
+string get_tag_binary(string address){
+    //get binary full address
+    string str = get_address_binary(address);
     
     //get tag part of full address
-    string tag = str.substr(0, QTD_TAG-1);
-    //get line part of full address
-    string line = str.substr(str.length() - QTD_LINE);
+    return str.substr(0, QTD_TAG);;
+}
 
+int get_line_index(string line){
     //convert line part to binary
     bitset<QTD_CACHE> bit_index(line);
     //convert binary line to int
-    int i = (int)bit_index.to_ulong();
+    return (int)bit_index.to_ulong();
+}
+
+//search if given address is into cache
+int search_cache(string address){    
+    //get tag part of full address
+    string tag = get_tag_binary(address);
+    //get line part of full address
+    string line = get_line_binary(address);
     
+    //get line index
+    int i = get_line_index(line);
+
     //if tag matches return the index (line)
     if(tag == cache[i].tag)
         return i;
     
     return -1;
+}
+
+void insert_cache(string address){
+    string line = get_line_binary(address);
+    string tag = get_tag_binary(address);
+    int i = get_line_index(line);
+
+    cache[i].tag = tag;
+    cache[i].data = search_ram(address);
+}
+
+void update_cache(int i, string address){
+    cache[i].tag = get_tag_binary(address);
+    cache[i].data = ram[search_ram(address)].data;
 }
 
 int main(){   
@@ -109,6 +146,37 @@ int main(){
 
     //write_ram_data();
     //write_cache_data();
+
+    double hit = 0;
+    double miss = 0;
+
+    string address;
+
+    // read trace
+    while (cin >> address){
+
+        //check if adress is into cache
+        int index = search_cache(address);
+
+        //if it is, update cache priority
+        if(index != -1){
+            update_cache(index, address);
+            hit++;
+        }    
+        //else, insert adress into cache          
+        else {
+            insert_cache(address);
+            miss++;
+        }
+    }
+    
+    cout << "HIT: " << hit 
+    << " MISS: " << miss << endl
+    << "HIT RATE: " << 100*(hit/(hit+miss)) << "%"
+    << endl;
+
+    cout << endl << endl << endl;
+    write_cache_data();
 
     return 0;
 }

@@ -10,7 +10,7 @@ int main(){
         << internal // fill between the prefix and the number
         << setfill('0'); // fill with 0s
 
-        cout << hex << uppercase << setw(4) << rand() % 5 << endl;
+        cout << hex << uppercase << setw(4) << rand() % 10 << endl;
     }
 
     return 0;
