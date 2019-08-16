@@ -13,11 +13,19 @@ $ ./initial_data/generate_initial_data > initial_data/initial_data
 $ g++ -std=c++14 -o ./trace/generate_trace ./trace/generate_trace.cpp
 $ ./trace/generate_trace > trace/trace
 ```
-3. Then execute **cache_simulator.cpp** with the generated *trace input* and get the results:
+3.1 Execute **direct_mapping.cpp** with the generated *trace input* and get the results:
+
 ```
-$ g++ -std=c++14 -o cache_simulator cache_simulator.cpp
-$ ./cache_simulator < trace/trace
+$ g++ -std=c++14 -o cache_direct_mapping/direct_mapping cache_direct_mapping/direct_mapping.cpp
+$ ./cache_direct_mapping/direct_mapping < trace/trace
 ```
 
-> ### Suggestions
-> * Change **generate_trace.cpp** to get diferent results.
+3.1 Execute **fully_associative.cpp** with the generated *trace input* and get the results:
+
+```
+$ g++ -std=c++14 -o cache_fully_associative/fully_associative cache_fully_associative/fully_associative.cpp
+$ ./cache_fully_associative/fully_associative < trace/trace
+```
+
+### Suggestions
+* Change **generate_trace.cpp** to get diferent results.
