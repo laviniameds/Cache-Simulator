@@ -63,7 +63,7 @@ void load_cache(){
     }
 }
 
-//search if given address is into cache
+//search if given address is into ram
 int search_ram(string address){
     for(int i=0;i<QTD_RAM;i++){
         if(address == ram[i].address)
