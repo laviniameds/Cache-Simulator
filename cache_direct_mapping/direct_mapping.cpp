@@ -96,7 +96,7 @@ string get_tag_binary(string address){
     string str = get_address_binary(address);
     
     //get tag part of full address
-    return str.substr(0, QTD_TAG);;
+    return str.substr(0, QTD_TAG);
 }
 
 int get_line_index(string line){
