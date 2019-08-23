@@ -4,7 +4,7 @@
 #include <bitset>  
 
 #define QTD_CACHE 32
-#define QTD_RAM 800000
+#define QTD_RAM 256
 #define QTD_TAG 20
 #define QTD_LINE 12
 
@@ -25,16 +25,16 @@ RAM ram[QTD_RAM];
 CACHE cache[QTD_CACHE];
 
 //write ram data
-long long write_ram_data(){
-    for(long long i=0;i<QTD_RAM;i++)
+int write_ram_data(){
+    for(int i=0;i<QTD_RAM;i++)
         cout << "ADD: " << ram[i].address 
         << " DATA: " << ram[i].data 
         << endl;
 }
 
 //write cache data
-long long write_cache_data(){
-    for(long long i=0;i<QTD_CACHE;i++)       
+int write_cache_data(){
+    for(int i=0;i<QTD_CACHE;i++)       
         cout << "TAG: " << cache[i].tag 
         << " LINE: " << cache[i].line 
         << " DATA: " << cache[i].data 
@@ -51,7 +51,7 @@ void load_ram(){
         exit(1); // terminate with error
     }
 
-    for(long long i=0;i<QTD_RAM;i++)
+    for(int i=0;i<QTD_RAM;i++)
         myReadFile >> ram[i].address >> ram[i].data;
 
     myReadFile.close();
@@ -59,7 +59,7 @@ void load_ram(){
 
 //load cache
 void load_cache(){
-    for(long long i=0;i<QTD_CACHE;i++){
+    for(int i=0;i<QTD_CACHE;i++){
         bitset<QTD_LINE> bit (i);
         cache[i].line = bit.to_string();
         cache[i].tag = "";
@@ -68,8 +68,8 @@ void load_cache(){
 }
 
 //search if given address is into ram
-long long search_ram(string address){
-    for(long long i=0;i<QTD_RAM;i++){
+int search_ram(string address){
+    for(int i=0;i<QTD_RAM;i++){
         if(address == ram[i].address)
             return i;
     }
@@ -99,22 +99,22 @@ string get_tag_binary(string address){
     return str.substr(0, QTD_TAG);
 }
 
-long long get_line_index(string line){
+int get_line_index(string line){
     //convert line part to binary
     bitset<QTD_CACHE> bit_index(line);
-    //convert binary line to long long
-    return (long long)bit_index.to_ulong();
+    //convert binary line to int
+    return (int)bit_index.to_ulong();
 }
 
 //search if given address is into cache
-long long search_cache(string address){    
+int search_cache(string address){    
     //get tag part of full address
     string tag = get_tag_binary(address);
     //get line part of full address
     string line = get_line_binary(address);
     
     //get line index
-    long long i = get_line_index(line);
+    int i = get_line_index(line);
 
     //if tag matches return the index (line)
     if(tag == cache[i].tag)
@@ -126,20 +126,20 @@ long long search_cache(string address){
 void insert_cache(string address){
     string line = get_line_binary(address);
     string tag = get_tag_binary(address);
-    long long i = get_line_index(line);
+    int i = get_line_index(line);
 
     cache[i].tag = tag;
-    cache[i].data = ram[search_ram(address)].data;
+    cache[i].data = "RANDOM DATA";
 }
 
-void update_cache(long long i, string address){
+void update_cache(int i, string address){
     cache[i].tag = get_tag_binary(address);
-    cache[i].data = ram[search_ram(address)].data;
+    cache[i].data = "RANDOM DATA";
 }
 
 int main(){   
     //load ram
-    load_ram();
+    // load_ram();
 
     //load_cache
     load_cache();
@@ -156,7 +156,7 @@ int main(){
     while (cin >> address){
 
         //check if adress is into cache
-        long long index = search_cache(address);
+        int index = search_cache(address);
 
         //if it is, update cache priority
         if(index != -1){
