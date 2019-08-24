@@ -57,7 +57,7 @@ void load_ram(){
 //load cache
 void load_cache(){
     for(int i=0;i<QTD_CACHE;i++){
-        cache[i].p = i+1;
+        cache[i].p = 1;
         cache[i].address = "";
         cache[i].data = "";
     }
@@ -132,25 +132,31 @@ int main(){
         //check if adress is into cache
         int index = search_cache(address);
 
+        //cout << "ADD: " << address << endl;
+
         //if it is, update cache priority
         if(index != -1){
             update_cache(index);
             hit++;
+            //cout << "HIT!" << endl << endl;
         }    
         //else, insert adress into cache          
         else {
             insert_cache(address);
             miss++;
+            //cout << "MISS!" << endl << endl;
         }
+        // cout << endl;
+        // write_cache_data();
     }
-    
+    cout << endl << endl << endl;
+
     cout << "HIT: " << hit 
     << " MISS: " << miss << endl
     << "HIT RATE: " << 100*(hit/(hit+miss)) << "%"
     << endl;
 
     cout << endl << endl << endl;
-    write_cache_data();
 
     return 0;
 }
