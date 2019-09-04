@@ -7,36 +7,25 @@
 #define QTD_RAM 256
 #define QTD_TAG 27
 #define QTD_LINE 5
+#define QTD_SET 16
 
 using namespace std;
 
 struct CACHE {
     string tag;
     string line;
+    int priority;
     string data;
 };
 
-struct RAM {
-    string address;
-    string data;
-};
-
-RAM ram[QTD_RAM];
 CACHE cache[QTD_CACHE];
-
-//write ram data
-int write_ram_data(){
-    for(int i=0;i<QTD_RAM;i++)
-        cout << "ADD: " << ram[i].address 
-        << " DATA: " << ram[i].data 
-        << endl;
-}
 
 //write cache data
 int write_cache_data(){
     for(int i=0;i<QTD_CACHE;i++)       
         cout << "TAG: " << cache[i].tag 
         << " LINE: " << cache[i].line 
+        << " PRIORITY: " << cache[i].priority 
         << " DATA: " << cache[i].data 
         << endl;
 }
@@ -46,6 +35,7 @@ void load_cache(){
     for(int i=0;i<QTD_CACHE;i++){
         bitset<QTD_LINE> bit (i);
         cache[i].line = bit.to_string();
+        cache[i].priority = 0;
         cache[i].tag = "";
         cache[i].data = "";
     }
@@ -65,8 +55,15 @@ int get_line_index(string line){
     return (int)bit_index.to_ulong();
 }
 
+int other_index(int index){
+    if(index%2 == 0)
+        return index+1;
+    else
+        return index-1;
+}
+
 //search if given address is into cache
-int search_cache(string address){    
+int search_cache(string address){  
     string add = get_address_binary(address);
       
     //get tag part of full address
@@ -78,14 +75,17 @@ int search_cache(string address){
     //get line index
     int i = get_line_index(line);
 
-    //cout << "ADD: " << address << " TAG: " << tag << " LINE: " << line << endl;
-
     //if tag matches return the index (line)
-    if(tag == cache[i].tag){
+    if(tag == cache[i].tag || tag == cache[other_index(i)].tag){
         return i;
     }
     
     return -1;
+}
+
+void update_cache(int index, string address){
+    cache[index].priority = 1;
+    cache[other_index(index)].priority = 0;
 }
 
 void insert_cache(string address){
@@ -99,17 +99,26 @@ void insert_cache(string address){
 
     //get line index
     int i = get_line_index(line); 
+    
+    int less_p;
 
-    cache[i].tag = tag;
-    cache[i].data = "RANDOM DATA";
+    if(cache[i].priority == 0)
+        less_p = i;
+    else 
+        less_p = other_index(i);
+
+    cache[less_p].tag = tag;
+    cache[less_p].data = "RANDOM DATA";
+    cache[less_p].priority = 1;
+    cache[other_index(less_p)].priority = 0;
 }
 
 int main(){   
     //load_cache
     load_cache();
 
-    int hit = 0;
-    int miss = 0;
+    double hit = 0;
+    double miss = 0;
 
     string address;
     int index;
@@ -122,6 +131,7 @@ int main(){
 
         //if it is, hit!
         if(index != -1){
+            update_cache(index, address);
             hit++;
         }    
         //else, insert adress into cache, miss!          

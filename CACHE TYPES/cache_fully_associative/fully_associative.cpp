@@ -38,22 +38,6 @@ int write_cache_data(){
         << endl;
 }
 
-//load ram
-void load_ram(){
-    ifstream myReadFile;
-    myReadFile.open("./initial_data/initial_data");
-
-    if (!myReadFile) {
-        cout << "Unable to open file";
-        exit(1); // terminate with error
-    }
-
-    for(int i=0;i<QTD_RAM;i++)
-        myReadFile >> ram[i].address >> ram[i].data;
-
-    myReadFile.close();
-}
-
 //load cache
 void load_cache(){
     for(int i=0;i<QTD_CACHE;i++){
@@ -132,22 +116,16 @@ int main(){
         //check if adress is into cache
         int index = search_cache(address);
 
-        //cout << "ADD: " << address << endl;
-
         //if it is, update cache priority
         if(index != -1){
             update_cache(index);
             hit++;
-            //cout << "HIT!" << endl << endl;
         }    
         //else, insert adress into cache          
         else {
             insert_cache(address);
             miss++;
-            //cout << "MISS!" << endl << endl;
         }
-        // cout << endl;
-        // write_cache_data();
     }
     cout << endl << endl << endl;
 
