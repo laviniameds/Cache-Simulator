@@ -37,11 +37,11 @@ void write_cache_data(){
 void load_cache(){
     for(int i=0;i<QTD_CACHE;i++)
         for(int j=0;j<QTD_SET;j++){
-        bitset<QTD_LINE> bit (i);
-        cache[i][j].line = bit.to_string();
-        cache[i][j].priority = 1;
-        cache[i][j].tag = "";
-        cache[i][j].data = "RANDOM DATA";
+            bitset<QTD_LINE> bit (i);
+            cache[i][j].line = bit.to_string();
+            cache[i][j].priority = 1;
+            cache[i][j].tag = "";
+            cache[i][j].data = "RANDOM DATA";
     }
 }
 
