@@ -28,6 +28,7 @@ void write_cache_data(){
       << " LINE: " << cache[i][j].line
       << " PRIORITY: " << cache[i][j].priority
       << " DATA: " << cache[i][j].data
+      << " SET: " << j+1
       << endl;
     }
 }
@@ -58,6 +59,14 @@ int get_line_index(string line){
     return (int)bit_index.to_ulong();
 }
 
+//return minimum priority (always 1)
+int get_min_p_cache(int index){
+    for(int j=0;j<QTD_SET;j++){
+        if(cache[index][j].priority == 1)
+            return j;
+    }
+}
+
 //search if given address is into cache
 int search_cache(string address){
     string add = get_address_binary(address);
@@ -80,11 +89,14 @@ int search_cache(string address){
 }
 
 void update_cache(int index){
+    int min_p = get_min_p_cache(index);
+    int last_priority = cache[index][min_p].priority;
+
+    cache[index][min_p].priority = QTD_SET;
+
     for(int j=0;j<QTD_SET;j++)
-        if(cache[index][j].priority == QTD_SET)
-            cache[index][j].priority = 1; 
-        else
-            cache[index][j].priority += 1; 
+        if(cache[index][j].priority > last_priority && j != min_p) 
+            cache[index][j].priority--; 
 }
 
 void insert_cache(string address){
@@ -98,15 +110,11 @@ void insert_cache(string address){
 
     //get line index
     int index = get_line_index(line);
-
-    for(int j=0;j<QTD_SET;j++)
-        if(cache[index][j].priority == QTD_SET){
-            cache[index][j].priority = 1; 
-            cache[index][j].tag = tag;
-            cache[index][j].data = "NEW DATA";
-        }
-        else
-            cache[index][j].priority += 1; 
+    
+    int min_p = get_min_p_cache(index);
+    cache[index][min_p].tag = tag;
+    cache[index][min_p].data = "NEW DATA";
+    update_cache(index);
 }
 
 int main(){
