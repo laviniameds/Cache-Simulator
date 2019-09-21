@@ -29,12 +29,13 @@ CACHE cache[QTD_CACHE][QTD_SET];
 void write_cache_data(){
   for(int i=0;i<QTD_CACHE;i++)
     for(int j=0;j<QTD_SET;j++){
-      cout << " PRIORITY: " << cache[i][j].priority << " SET: " << j+1;
+      cout << "PRIORITY: " << cache[i][j].priority << " SET: " << j+1;
 
     for(int k=0;k<QTD_WORD_LINE;k++){
-        cout << " LINE ID: " << cache[i][j].line[k].id
-        << " DATA: " << cache[i][j].line[k].data
-        << " TAG: " << cache[i][j].line[k].tag;
+        cout << " TAG: " << cache[i][j].line[k].tag
+        << " LINE: " << cache[i][j].line[k].id
+        << " WORD: " << k
+        << " DATA: " << cache[i][j].line[k].data;
     }
       cout << endl;
     }
