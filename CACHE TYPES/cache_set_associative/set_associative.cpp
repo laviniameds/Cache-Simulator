@@ -4,18 +4,23 @@
 #include <bitset>
 
 #define QTD_CACHE 32
-#define QTD_RAM 256
-#define QTD_TAG 27
+#define QTD_TAG 26
 #define QTD_LINE 5
+#define QTD_WORD_BIT 1
+#define QTD_WORD_LINE 2
 #define QTD_SET 2
 
 using namespace std;
 
-struct CACHE {
+struct LINE {
+    string id;
     string tag;
-    string line;
-    int priority;
     string data;
+};
+
+struct CACHE {
+    LINE line[QTD_WORD_LINE];
+    int priority;
 };
 
 CACHE cache[QTD_CACHE][QTD_SET];
@@ -24,12 +29,14 @@ CACHE cache[QTD_CACHE][QTD_SET];
 void write_cache_data(){
   for(int i=0;i<QTD_CACHE;i++)
     for(int j=0;j<QTD_SET;j++){
-      cout << "TAG: " << cache[i][j].tag
-      << " LINE: " << cache[i][j].line
-      << " PRIORITY: " << cache[i][j].priority
-      << " DATA: " << cache[i][j].data
-      << " SET: " << j+1
-      << endl;
+      cout << " PRIORITY: " << cache[i][j].priority << " SET: " << j+1;
+
+    for(int k=0;k<QTD_WORD_LINE;k++){
+        cout << " LINE ID: " << cache[i][j].line[k].id
+        << " DATA: " << cache[i][j].line[k].data
+        << " TAG: " << cache[i][j].line[k].tag;
+    }
+      cout << endl;
     }
 }
 
@@ -37,11 +44,13 @@ void write_cache_data(){
 void load_cache(){
     for(int i=0;i<QTD_CACHE;i++)
         for(int j=0;j<QTD_SET;j++){
-            bitset<QTD_LINE> bit (i);
-            cache[i][j].line = bit.to_string();
+            bitset<QTD_LINE> bit (i);            
+            for(int k=0;k<QTD_WORD_LINE;k++){
+                cache[i][j].line[k].id = bit.to_string();
+                cache[i][j].line[k].tag = "";
+                cache[i][j].line[k].data = "RANDOM DATA";
+            }         
             cache[i][j].priority = 1;
-            cache[i][j].tag = "";
-            cache[i][j].data = "RANDOM DATA";
     }
 }
 
@@ -72,18 +81,25 @@ int search_cache(string address){
     string add = get_address_binary(address);
 
     //get tag part of full address
-    string tag = add.substr(0 , add.length()-QTD_LINE);
+    string tag = add.substr(0 , add.length()-QTD_LINE-QTD_WORD_BIT);
 
     //get line part of full address
-    string line =  add.substr(add.length()-QTD_LINE , add.length());
+    string line = add.substr(add.length()-QTD_LINE-QTD_WORD_BIT, add.length());
+    line.erase(line.length()-QTD_WORD_BIT);
+
+    //get word part of full address
+    string word = add.substr(add.length()-QTD_WORD_BIT);
+
+    //cout << "FULL ADD: " << add << " TAG: " << tag << " LINE: " << line << " WORD: " << word;
 
     //get line index
     int index = get_line_index(line);
 
     //if tag matches return the index (line)
-    for(int j=0;j<QTD_SET;j++)
-        if(cache[index][j].tag == tag)
-          return index;
+    for(int j=0;j<QTD_SET;j++){
+        if(cache[index][j].line[stoi(word)].tag == tag)
+            return index;
+    }
 
     return -1;
 }
@@ -103,17 +119,22 @@ void insert_cache(string address){
     string add = get_address_binary(address);
 
     //get tag part of full address
-    string tag = add.substr(0 , add.length()-QTD_LINE);
+    string tag = add.substr(0 , add.length()-QTD_LINE-QTD_WORD_BIT);
 
     //get line part of full address
-    string line =  add.substr(add.length()-QTD_LINE , add.length());
+    string line = add.substr(add.length()-QTD_LINE-QTD_WORD_BIT, add.length());
+    line.erase(line.length()-QTD_WORD_BIT);
+
+    //get word part of full address
+    string word = add.substr(add.length()-QTD_WORD_BIT);
 
     //get line index
     int index = get_line_index(line);
     
     int min_p = get_min_p_cache(index);
-    cache[index][min_p].tag = tag;
-    cache[index][min_p].data = "NEW DATA";
+    
+    cache[index][min_p].line[stoi(word)].tag = tag;
+    cache[index][min_p].line[stoi(word)].data = "NEW DATA";
     update_cache(index);
 }
 
@@ -151,6 +172,7 @@ int main(){
     << endl;
 
     cout << endl << endl << endl;
+
     write_cache_data();
 
     return 0;
